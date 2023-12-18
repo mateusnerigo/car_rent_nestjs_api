@@ -1,0 +1,26 @@
+carros
+id int(11)
+nome varchar(50)
+marca varchar(50)
+modelo varchar(50)
+cor varchar(50)
+ano varchar(50)
+portas int(4)
+observacoes varchar(100)
+
+clientes
+id int(11)
+nome varchar(100)
+ativo tinyint(1)
+
+locacoes
+id int(11)
+carros_id int(11) fk
+clientes_id int(11) fk
+data_de datetime
+data_ate datetime
+
+ocorrencias
+id int(11)
+locacoes_id int(11)
+descricao varchar(100)
