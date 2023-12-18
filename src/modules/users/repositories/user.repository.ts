@@ -10,6 +10,7 @@ import { User } from "../entities/user.entity";
 import { CreateUserDto } from "../dto/create-user.dto";
 
 import { UserRole } from "../enums/user-roles.enum";
+import { CredentialsDto } from "src/modules/auth/dto/credentials.dto";
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -47,6 +48,22 @@ export class UserRepository extends Repository<User> {
         )
       }
     }
+  }
+
+  async checkCredentials(credentialsDto: CredentialsDto): Promise<User> {
+    const { email, password } = credentialsDto;
+    const user = await this.findOne({
+      where: {
+        email,
+        status: true
+      }
+    });
+
+    if (user && (await user.checkPassword(password))) {
+      return user;
+    }
+
+    return null;
   }
 
   private async hashPassword (password: string, salt: string = ''): Promise<string> {

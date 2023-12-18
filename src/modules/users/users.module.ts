@@ -5,7 +5,7 @@ import { UserRepository } from './repositories/user.repository';
 
 import { UsersService } from './users.service';
 
-import { UsersController } from 'src/controllers/users/users.controller';
+import { UsersController } from 'src/controllers/users.controller';
 
 import { User } from './entities/user.entity';
 

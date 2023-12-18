@@ -17,8 +17,8 @@ export class UsersService {
   async createAdminUser(createUserDto: CreateUserDto): Promise<User> {
     if (createUserDto.password != createUserDto.passwordConfirmation) {
       throw new UnprocessableEntityException('Passwords do not match.');
-    } else {
-      return await this.userRepository.createUser(createUserDto, UserRole.ADMIN);
     }
+
+    return await this.userRepository.createUser(createUserDto, UserRole.ADMIN);
   }
 }
