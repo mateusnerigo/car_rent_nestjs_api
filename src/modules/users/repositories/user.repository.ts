@@ -1,10 +1,9 @@
 import { ConflictException, Injectable, InternalServerErrorException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
 
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 
-import { Repository } from "typeorm";
+import { DataSource, Repository } from "typeorm";
 
 import { User } from "../entities/user.entity";
 
@@ -14,11 +13,8 @@ import { UserRole } from "../enums/user-roles.enum";
 
 @Injectable()
 export class UserRepository extends Repository<User> {
-  constructor(
-    @InjectRepository(User)
-    repository: Repository<User>
-  ) {
-    super(repository.target, repository.manager, repository.queryRunner);
+  constructor(private dataSource: DataSource) {
+    super(User, dataSource.createEntityManager());
   }
 
   async createUser(
