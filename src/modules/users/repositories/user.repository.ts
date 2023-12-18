@@ -59,11 +59,9 @@ export class UserRepository extends Repository<User> {
       }
     });
 
-    if (user && (await user.checkPassword(password))) {
-      return user;
-    }
-
-    return null;
+    return (user && (await user.checkPassword(password)))
+      ? user
+      : null;
   }
 
   private async hashPassword (password: string, salt: string = ''): Promise<string> {
