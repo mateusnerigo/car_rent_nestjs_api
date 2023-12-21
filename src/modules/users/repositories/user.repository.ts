@@ -8,9 +8,12 @@ import { DataSource, Repository } from "typeorm";
 import { User } from "../entities/user.entity";
 
 import { CreateUserDto } from "../dto/create-user.dto";
+import { CredentialsDto } from "src/modules/auth/dto/credentials.dto";
+import { FindUsersQueryDto } from "../dto/find-users-query.dto";
+import { FoundUsersDto } from "../dto/found-users-dto";
 
 import { UserRole } from "../enums/user-roles.enum";
-import { CredentialsDto } from "src/modules/auth/dto/credentials.dto";
+
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -48,6 +51,37 @@ export class UserRepository extends Repository<User> {
         )
       }
     }
+  }
+
+  async findUsers(queryDto: FindUsersQueryDto): Promise<FoundUsersDto> {
+    queryDto.status = (queryDto.status === undefined) ? true : queryDto.status;
+    queryDto.page = (queryDto.page < 1) ? 1 : queryDto.page;
+    queryDto.limit = (queryDto.limit > 100) ? 100 : queryDto.limit;
+
+    const { email, name, status, role } = queryDto;
+    const query = this.createQueryBuilder('user');
+    query.where('user.status = :status', { status });
+
+    if (email) {
+      query.andWhere('user.email ILIKE :email', { email: `%${email}%` });
+    }
+
+    if (name) {
+      query.andWhere('user.name ILIKE :name', { name: `%${name}%` });
+    }
+
+    if (role) {
+      query.andWhere('user.role = :role', { role });
+    }
+
+    const [users, total] = await query
+      .skip((queryDto.page - 1) * queryDto.limit)
+      .take(+queryDto.limit)
+      .orderBy(queryDto.sort ? JSON.parse(queryDto.sort) : undefined)
+      .select(['user.name', 'user.email', 'user.role', 'user.status'])
+      .getManyAndCount();
+
+    return { users, total };
   }
 
   async checkCredentials(credentialsDto: CredentialsDto): Promise<User> {
