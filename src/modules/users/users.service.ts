@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 
 import { UserRepository } from './repositories/user.repository';
 
@@ -38,20 +38,13 @@ export class UsersService {
     return user;
   }
 
-  async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.findUserById(id);
-    const { name, email, role, status } = updateUserDto;
-
-    user.name = name ?? user.name;
-    user.email = email ?? user.email;
-    user.role = role ?? user.role;
-    user.status = status ?? user.status;
-
-    try {
-      await user.save();
+  async updateUser(updateUserDto: UpdateUserDto, id: string) {
+    const result = await this.userRepository.update({ id }, updateUserDto);
+    if (result.affected > 0) {
+      const user = await this.findUserById(id);
       return user;
-    } catch (error) {
-      throw new InternalServerErrorException('Error saving user data.');
+    } else {
+      throw new NotFoundException('Usuário não encontrado');
     }
   }
 
