@@ -17,7 +17,9 @@ import { ReturnFindUsersDto } from 'src/modules/users/dto/return-find-users.dto'
 import { UsersService } from 'src/modules/users/users.service';
 
 import { User } from 'src/modules/users/entities/user.entity';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Users')
 @Controller('users')
 @UseGuards(AuthGuard(), RolesGuard)
 export class UsersController {
@@ -50,7 +52,7 @@ export class UsersController {
   async findUsers(@Query() query: FindUsersQueryDto): Promise<ReturnFindUsersDto>  {
     const found = await this.usersService.findUsers(query);
     return {
-      found,
+      users: found,
       message: 'Users found!'
     };
   }

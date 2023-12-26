@@ -13,9 +13,7 @@ import { UserRole } from './enums/user-roles.enum';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    private readonly userRepository: UserRepository
-  ) {}
+  constructor(private readonly userRepository: UserRepository) {}
 
   async createAdminUser(createUserDto: CreateUserDto): Promise<User> {
     if (createUserDto.password != createUserDto.passwordConfirmation) {
@@ -38,7 +36,7 @@ export class UsersService {
     return user;
   }
 
-  async updateUser(updateUserDto: UpdateUserDto, id: string) {
+  async updateUser(id: string, updateUserDto: UpdateUserDto) {
     const result = await this.userRepository.update({ id }, updateUserDto);
     if (result.affected > 0) {
       const user = await this.findUserById(id);
